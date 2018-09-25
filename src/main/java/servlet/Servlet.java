@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 @WebServlet("/api/orders")
 public class Servlet extends HttpServlet {
@@ -17,15 +18,35 @@ public class Servlet extends HttpServlet {
             throws IOException {
 
         String string = Util.asString(req.getInputStream());
+
         string = string.replace("{", "");
         string = string.replace("}", "");
         string = string.replace("\"", "");
         string = string.trim();
-        String[] map = string.split(":");
-        map[1] = map[1].trim();
+        String[] couples;
+        String[] postedOrderNr;
         Post post = new Post();
         post.setId(id);
-        post.setOrderNumber(map[1]);
+        if(string.contains(",")){
+            couples = string.split(",");
+
+            System.out.println(Arrays.asList(couples));
+            if(couples[0].toLowerCase().contains("id")){
+                postedOrderNr = couples[1].split(":");
+                postedOrderNr[1] = postedOrderNr[1].trim();
+                post.setOrderNumber(postedOrderNr[1]);
+            } else {
+                postedOrderNr = couples[0].split(":");
+                postedOrderNr[0] = postedOrderNr[0].trim();
+                post.setOrderNumber(postedOrderNr[0]);
+            }
+
+        } else {
+            postedOrderNr = string.split(":");
+            postedOrderNr[1] = postedOrderNr[1].trim();
+            post.setOrderNumber(postedOrderNr[1]);
+        }
+
         resp.setHeader("Content-Type", "application/json");
         resp.getWriter().print(post);
         id++;
