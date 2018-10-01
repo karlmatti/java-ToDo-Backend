@@ -1,57 +1,68 @@
 package servlet;
 
-import servlet.model.Post;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import servlet.model.Order;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-@WebServlet("/api/orders")
+@WebServlet(urlPatterns = {"/api/orders", "/orders/form"})
 public class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static long id = 0;
+    private List<Order> orderList = new ArrayList();
+    private long id = 0;
+    private Order apiOrder;
+    private Order formOrder = new Order();
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
 
-        String string = Util.asString(req.getInputStream());
 
-        string = string.replace("{", "");
-        string = string.replace("}", "");
-        string = string.replace("\"", "");
-        string = string.trim();
-        String[] couples;
-        String[] postedOrderNr;
-        Post post = new Post();
-        post.setId(id);
-        if(string.contains(",")){
-            couples = string.split(",");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String[] stringArray;
+        if(request.getServletPath().equalsIgnoreCase("/api/orders")) {
 
-            System.out.println(Arrays.asList(couples));
-            if(couples[0].toLowerCase().contains("id")){
-                postedOrderNr = couples[1].split(":");
-                postedOrderNr[1] = postedOrderNr[1].trim();
-                post.setOrderNumber(postedOrderNr[1]);
-            } else {
-                postedOrderNr = couples[0].split(":");
-                postedOrderNr[0] = postedOrderNr[0].trim();
-                post.setOrderNumber(postedOrderNr[0]);
-            }
+            ObjectMapper mapper = new ObjectMapper();
+            String string = Util.asString(request.getInputStream());
 
-        } else {
-            postedOrderNr = string.split(":");
-            postedOrderNr[1] = postedOrderNr[1].trim();
-            post.setOrderNumber(postedOrderNr[1]);
+            apiOrder = mapper.readValue(string, Order.class);
+            id++;
+            apiOrder.setId(id);
+            orderList.add(apiOrder);
+
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(apiOrder);
+
+        } else if(request.getServletPath().equalsIgnoreCase("/orders/form")){
+
+            String string = Util.asString(request.getInputStream());
+            stringArray = string.split("=");
+            formOrder.setOrderNumber(stringArray[1]);
+            id++;
+            formOrder.setId(id);
+            orderList.add(formOrder);
+
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(formOrder.getId());
+
         }
-
-        resp.setHeader("Content-Type", "application/json");
-        resp.getWriter().print(post);
-        id++;
-
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        long givenId = Long.parseLong(request.getParameter("id"));
+        response.setHeader("Content-Type", "application/json");
+        for (Order order: orderList) {
+            if(order.getId() == givenId){
+                response.getWriter().print(order);
+                break;
+            }
+        }
+    }
 
 }
