@@ -16,6 +16,11 @@ public class Order {
 
     public Order() { }
 
+    public Order(long id, String orderNumber) {
+        this.id = id;
+        this.orderNumber = orderNumber;
+    }
+
     public Order(String orderNumber) { this.orderNumber = orderNumber; }
 
     public Long getId() {
