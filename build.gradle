@@ -15,13 +15,31 @@ dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: commonVersion
+    compile group: 'com.fasterxml.jackson.core', 
+            name: 'jackson-databind', 
+            version: commonVersion
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: commonVersion
+    compile group: 'com.fasterxml.jackson.core', 
+            name: 'jackson-annotations', 
+            version: commonVersion
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: commonVersion
+    compile group: 'com.fasterxml.jackson.core', 
+            name: 'jackson-core', 
+            version: commonVersion
+
+    // https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp
+    compile group: 'commons-dbcp', 
+            name: 'commons-dbcp', 
+            version: '1.4'
+
+    compile group: 'org.hsqldb',
+            name: 'hsqldb',
+            version: '2.4.1'
+
+
+
 
 }
 
