@@ -14,7 +14,13 @@ public class Order {
     private String orderNumber;
     private List<OrderRow> orderRows = new ArrayList();
 
-    public Order() { }
+    public Order() {}
+
+    public Order(long orders_id, String orderNumber, List<OrderRow> orderRows) {
+        this.id = orders_id;
+        this.orderNumber = orderNumber;
+        this.orderRows = orderRows;
+    }
 
     public Order(long id, String orderNumber) {
         this.id = id;

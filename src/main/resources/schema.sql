@@ -4,3 +4,10 @@ CREATE TABLE orders (
  id BIGINT NOT NULL PRIMARY KEY,
  order_number VARCHAR(255)
 );
+CREATE TABLE order_row (
+  item_name VARCHAR(255),
+  quantity INT,
+  price INT,
+  order_id BIGINT NOT NULL FOREIGN KEY
+  REFERENCES orders(id)
+);

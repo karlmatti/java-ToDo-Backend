@@ -2,7 +2,7 @@ package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import servlet.model.Order;
-import util.*;
+import util.InputAsString;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(urlPatterns = {"/api/orders", "/orders/form"})
 public class Servlet extends HttpServlet {
@@ -30,7 +29,7 @@ public class Servlet extends HttpServlet {
             String string = InputAsString.asString(request.getInputStream());
 
             apiOrder = mapper.readValue(string, Order.class);
-
+            System.out.println(apiOrder.getOrderRows());
             Order order = new OrderDao().insertOrder(apiOrder);
 
             response.setHeader("Content-Type", "application/json");
@@ -52,12 +51,19 @@ public class Servlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        List<Order> orderList = new OrderDao().getOrderList();
+        //TODO: return all orders when parameter is not defined
+        long givenId = Long.parseLong(request.getParameter("id"));
+        Order order = new OrderDao().getOrdersById(givenId);
 
         response.setHeader("Content-Type", "application/json");
-        response.getWriter().print(orderList);
+        response.getWriter().print(order);
 
+    }
+
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        //TODO: delete orders and order_row where id is given parameter
+        long givenId = Long.parseLong(request.getParameter("id"));
     }
 
 }

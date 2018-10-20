@@ -1,7 +1,6 @@
 package servlet.model;
-
+//https://bitbucket.org/mkalmo/hwtests/src/master/src/main/java/tests/model/OrderRow.java
 public class OrderRow {
-
     private String itemName;
     private Integer quantity;
     private Integer price;
