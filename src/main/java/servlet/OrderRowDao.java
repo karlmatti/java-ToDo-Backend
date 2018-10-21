@@ -1,34 +1,56 @@
 package servlet;
 
-import servlet.model.Order;
 import servlet.model.OrderRow;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
-public class OrderRowDao {
-    public static String URL = OrderDao.URL;
+class OrderRowDao {
 
-    public static List<OrderRow> insertOrderRow(long orderId, Order order) {
-        List<OrderRow> orderRows = order.getOrderRows();
-        for (int i = 0; i < orderRows.size(); i++) {
+
+    private static String URL = OrderDao.URL;
+
+
+    List<OrderRow> insertOrderRow(long orderId, List<OrderRow> orderRow)
+    {
+        for (OrderRow anOrderRow : orderRow) {
             String sql = "INSERT INTO order_row (item_name, quantity, price, order_id)" +
                     "VALUES (?, ?, ?, ?)";
+
             try (Connection conn = DriverManager.getConnection(URL);
                  PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, orderRows.get(i).getItemName());
-                ps.setInt(2, orderRows.get(i).getQuantity());
-                ps.setInt(3, orderRows.get(i).getPrice());
+                ps.setString(1, anOrderRow.getItemName());
+                ps.setInt(2, anOrderRow.getQuantity());
+                ps.setInt(3, anOrderRow.getPrice());
                 ps.setLong(4, orderId);
 
                 ps.executeUpdate();
 
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
         }
-        return orderRows;
+
+        return orderRow;
+    }
+
+
+    void deleteOrderRowsById(long insertedId)
+    {
+        String sql = "DELETE FROM order_row " +
+                "WHERE order_id = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             PreparedStatement ps = conn.prepareStatement(sql))
+        {
+            ps.setLong(1, insertedId);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

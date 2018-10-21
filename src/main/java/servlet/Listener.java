@@ -15,13 +15,14 @@ public class Listener implements ServletContextListener{
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("Starting up!");
+        System.out.println("Servlet is starting up!");
 
         try (Connection conn = DriverManager.getConnection(OrderDao.URL);
-             Statement stmt = conn.createStatement()) {
-
+             Statement stmt = conn.createStatement())
+        {
             stmt.executeUpdate(FileUtil.readFileFromClasspath("schema.sql"));
-            System.out.println("executing schema.sql statements");
+            System.out.println("Schema.sql statements have been executed.");
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -30,6 +31,6 @@ public class Listener implements ServletContextListener{
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        System.out.println("Shutting down!");
+        System.out.println("Servlet is shutting down!");
     }
 }

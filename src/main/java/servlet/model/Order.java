@@ -16,12 +16,6 @@ public class Order {
 
     public Order() {}
 
-    public Order(long orders_id, String orderNumber, List<OrderRow> orderRows) {
-        this.id = orders_id;
-        this.orderNumber = orderNumber;
-        this.orderRows = orderRows;
-    }
-
     public Order(long id, String orderNumber) {
         this.id = id;
         this.orderNumber = orderNumber;
@@ -52,6 +46,8 @@ public class Order {
     public void setOrderRows(List<OrderRow> orderRow) {
         this.orderRows = orderRow;
     }
+
+    public void addOrderRows(OrderRow orderRow) { this.orderRows.add(orderRow); }
 
     @Override
     public String toString() {
