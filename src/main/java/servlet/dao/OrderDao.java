@@ -1,4 +1,4 @@
-package servlet;
+package servlet.dao;
 
 import servlet.model.Order;
 import servlet.model.OrderRow;
@@ -7,14 +7,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class OrderDao
+public class OrderDao
 {
 
 
-    static String URL = "jdbc:hsqldb:mem:my-database";
+    public static String URL = "jdbc:hsqldb:mem:my-database";
 
 
-    Order insertOrder(Order order)
+    public Order insertOrder(Order order)
     {
 
         String sql = "INSERT INTO orders (id, order_number)" +
@@ -37,7 +37,7 @@ class OrderDao
     }
 
 
-    List<Order> getOrderList()
+    public List<Order> getOrderList()
     {
 
         List<Order> orderList = new ArrayList<>();
@@ -93,7 +93,7 @@ class OrderDao
    }
 
 
-    Order getOrdersById(long insertedId)
+    public Order getOrdersById(long insertedId)
     {
         Order o = new Order();
 
@@ -147,7 +147,7 @@ class OrderDao
     }
 
 
-    void deleteOrdersById(long insertedId)
+    public void deleteOrdersById(long insertedId)
     {
         String sql = "DELETE FROM orders " +
                 "WHERE id = ?;";
@@ -158,6 +158,20 @@ class OrderDao
             ps.setLong(1, insertedId);
 
             ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteAllOrders()
+    {
+        String sql = "DELETE FROM orders;";
+
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement())
+        {
+            stmt.execute(sql);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

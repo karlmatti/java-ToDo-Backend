@@ -1,5 +1,6 @@
 package servlet;
 
+import servlet.dao.OrderDao;
 import util.FileUtil;
 
 import javax.servlet.ServletContextEvent;
@@ -21,7 +22,7 @@ public class Listener implements ServletContextListener{
              Statement stmt = conn.createStatement())
         {
             stmt.executeUpdate(FileUtil.readFileFromClasspath("schema.sql"));
-            System.out.println("Schema.sql statements have been executed.");
+            System.out.println("schema.sql statements have been executed.");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
