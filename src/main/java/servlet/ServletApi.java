@@ -3,7 +3,6 @@ package servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import servlet.dao.OrderDao;
 import servlet.dao.OrderRowDao;
-import servlet.dao.ReportDao;
 import servlet.model.Order;
 import servlet.model.OrderRow;
 import servlet.model.ValidationError;
@@ -19,57 +18,37 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/api/orders", "/orders/form", "/api/orders/report"})
-public class Servlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/api/orders"})
+public class ServletApi extends HttpServlet {
 
-
-    private static final long serialVersionUID = 1L;
     private Order apiOrder;
-    private Order formOrder = new Order();
-
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        if(request.getServletPath().equalsIgnoreCase("/api/orders"))
-        {
+        ObjectMapper mapper = new ObjectMapper();
 
-            ObjectMapper mapper = new ObjectMapper();
+        String string = InputAsString.asString(request.getInputStream());
 
-            String string = InputAsString.asString(request.getInputStream());
-
-            if(getValidationErrors(string).getErrors().get(0).getCode() != null){
-                ValidationErrors errors = getValidationErrors(string);
-                String json2 = mapper.writeValueAsString(errors);
-                response.setHeader("Content-Type", "application/json");
-                response.setStatus(400);
-                response.getWriter().print(json2);
-
-            } else {
-
-                apiOrder = mapper.readValue(string, Order.class);
-                Order order = new OrderDao().insertOrder(apiOrder);
-                List<OrderRow> orderRows = new OrderRowDao().insertOrderRow(order.getId(), apiOrder.getOrderRows());
-                order.setOrderRows(orderRows);
-                String json = new ObjectMapper().writeValueAsString(order);
-                response.setHeader("Content-Type", "application/json");
-                response.getWriter().print(json);
-            }
-
-        } else if(request.getServletPath().equalsIgnoreCase("/orders/form"))
-        {
-            String string = InputAsString.asString(request.getInputStream());
-
-            String[] stringArray = string.split("=");
-
-            formOrder.setOrderNumber(stringArray[1]);
-
-            Order order = new OrderDao().insertOrder(formOrder);
-
+        if(getValidationErrors(string).getErrors().get(0).getCode() != null){
+            ValidationErrors errors = getValidationErrors(string);
+            String json2 = mapper.writeValueAsString(errors);
             response.setHeader("Content-Type", "application/json");
+            response.setStatus(400);
+            response.getWriter().print(json2);
 
-            response.getWriter().print(order.getId());
+        } else {
+
+            apiOrder = mapper.readValue(string, Order.class);
+            Order order = new OrderDao().insertOrder(apiOrder);
+            List<OrderRow> orderRows = new OrderRowDao().insertOrderRow(order.getId(), apiOrder.getOrderRows());
+            order.setOrderRows(orderRows);
+            String json = new ObjectMapper().writeValueAsString(order);
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(json);
         }
+
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -90,12 +69,6 @@ public class Servlet extends HttpServlet {
                 response.getWriter().print(json);
             }
 
-        } else if (request.getServletPath()
-                .equalsIgnoreCase("/api/orders/report")) {
-            System.out.println("halleluuja");
-            String json = new ObjectMapper().writeValueAsString(
-                    new ReportDao().getReport());
-            response.getWriter().print(json);
         }
     }
 
@@ -144,7 +117,7 @@ public class Servlet extends HttpServlet {
             errorList.add(error);
 
             errors.setErrors(errorList);
-            System.out.println("issand + "+errors);
+
             return errors;
         } else {
             errorList.add(error);
