@@ -9,27 +9,16 @@ repositories {
 }
 
 sourceCompatibility = 8
-def commonVersion = '2.9.7'
+def lombokVersion = '1.18.2'
+def springVersion = '5.1.0.RELEASE'
 
 dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    
+    compile group: 'com.fasterxml.jackson.core',
+            name: 'jackson-databind',
+            version: '2.9.7'
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    compile group: 'com.fasterxml.jackson.core', 
-            name: 'jackson-databind', 
-            version: commonVersion
-
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-    compile group: 'com.fasterxml.jackson.core', 
-            name: 'jackson-annotations', 
-            version: commonVersion
-
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    compile group: 'com.fasterxml.jackson.core', 
-            name: 'jackson-core', 
-            version: commonVersion
-
-    // https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp
     compile group: 'commons-dbcp', 
             name: 'commons-dbcp', 
             version: '1.4'
@@ -38,7 +27,25 @@ dependencies {
             name: 'hsqldb',
             version: '2.4.1'
 
+    compile group: 'org.springframework',
+            name: 'spring-webmvc',
+            version: springVersion
 
+    compile group: 'org.springframework',
+            name: 'spring-jdbc',
+            version: springVersion
+
+    compileOnly group: 'org.projectlombok',
+            name: 'lombok',
+            version: lombokVersion
+
+    annotationProcessor group: 'org.projectlombok',
+            name: 'lombok',
+            version: lombokVersion
+    
+    compile group: 'org.hibernate',
+            name: 'hibernate-validator',
+            version: '6.0.2.Final'
 
 
 }
