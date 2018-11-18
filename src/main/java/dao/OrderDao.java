@@ -1,70 +1,45 @@
 package dao;
 
 import model.Order;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public class OrderDao {
 
-    @Autowired
-    private JdbcTemplate template;
+    @PersistenceContext
+    private EntityManager em;
 
-    public Order save(Order order) {
-        String sql = "INSERT INTO orders (id, order_number) " +
-                "VALUES (NEXT VALUE FOR seq1, ?)";
-
-        GeneratedKeyHolder holder = new GeneratedKeyHolder();
-
-        template.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement(sql, new String[] {"id"});
-
-            ps.setString(1, order.getOrderNumber());
-
-            return ps;
-            }, holder);
-
-        order.setId(holder.getKey().longValue());
-
-        return order;
+    @Transactional
+    public void save(Order order) {
+        if (order.getId() == null) {
+            em.persist(order);
+        } else {
+            em.merge(order);
+        }
     }
 
-    public Order findById(Long id) {
-        String sql = "SELECT id, order_number " +
-                "FROM orders WHERE id = ?";
-
-        return template.queryForObject(sql, new Object[] {id}, getOrderRowMapper());
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o",
+            Order.class).getResultList();
     }
 
-    private RowMapper<Order> getOrderRowMapper() {
-        return (rs, rowNum) -> new Order(
-                rs.getLong("id"),
-                rs.getString("order_number"),
-                null);
-
+    public void deleteAll() {
+        em.createQuery("delete from Order o").executeUpdate();
     }
 
-    /*public Order findById(Long id) {
-        String sql = "SELECT orders.id, " +
-                "orders.order_number, order_row.item_name, " +
-                "order_row.quantity, order_row.price " +
-                "FROM  orders " +
-                "LEFT JOIN order_row ON orders.id = order_row.order_id " +
-                "WHERE orders.id = ?";
+    public Order findOrderById(Long orderId) {
+        TypedQuery<Order> query = em.createQuery(
+                "select o from Order o where o.id = :orderId",
+                Order.class);
 
-        return template.queryForObject(sql, new Object[] {id}, getOrderRowMapper());
-    }
+        query.setParameter("orderId", orderId);
 
-    private RowMapper<Order> getOrderRowMapper() {
-        return (rs, rowNum) -> new Order(
-                rs.getLong("id"),
-                rs.getString("order_number"));
-                rs.
+        return query.getSingleResult();
     }
-*/
 }
